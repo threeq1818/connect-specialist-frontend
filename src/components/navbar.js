@@ -1,13 +1,18 @@
 // components/navbar.js
 
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { Component } from 'react';
+import { withStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { compose } from 'recompose'
+import { withRouter } from 'react-router-dom';
+import { logoutUser } from '../actions/authentication';
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
     root: {
         flexGrow: 1,
     },
@@ -17,26 +22,67 @@ const useStyles = makeStyles(theme => ({
     title: {
         flexGrow: 1,
     },
-}));
+});
 
+class NavBar extends Component {
+    constructor(props) {
+        super(props);
+    }
 
-const NavBar = () => {
-    const classes = useStyles();
+    onLogout(e) {
+        e.preventDefalut();
+        this.props.logoutUser(this.props.history);
+    }
 
-    return (
-        <div className={classes.root}>
-            <AppBar position='static'>
-                <ToolBar>
-                    <Typography variant="h6" className={classes.title}>
-                        Specialists And Customers Always Wish To Meet
-                    </Typography>
+    render() {
+        const { classes, auth } = this.props;
+        const { isAuthenticated, user } = auth;
 
-                    <Button color="inherit">Sign Up</Button>
-                    <Button color="inherit">Sign In</Button>
-                </ToolBar>
-            </AppBar>
-        </div >
-    );
+        const authLink = (
+            <>
+                <Button color="inherit">My Profile</Button>
+                <Button color="inherit">Sign Out</Button>
+            </>
+        );
+        const guessLink = (
+            <>
+                <Button color="inherit" href="register">Sign Up</Button>
+                <Button color="inherit" href="login">Sign In</Button>
+            </>
+        );
+
+        return (
+            <div className={classes.root}>
+                <AppBar position='static'>
+                    <ToolBar>
+                        <Typography variant="h6" className={classes.title}>
+                            Specialists And Customers Always Wish To Meet
+                        </Typography>
+                        {isAuthenticated ? authLink : guessLink}
+                    </ToolBar>
+                </AppBar>
+            </div >
+        );
+    }
 }
 
-export default NavBar;
+NavBar.propTypes = {
+    logoutUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => {
+    return {
+        auth: state.auth
+    }
+}
+
+const enhance = compose(
+    withStyles(styles),
+    withRouter,
+    connect(mapStateToProps, { logoutUser })
+)
+
+export default enhance(NavBar);
+// export default NavBar;
+
