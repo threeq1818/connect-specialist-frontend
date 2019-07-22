@@ -1,5 +1,5 @@
 // reducers/errorReducer.js
-import GET_ERRORS from '../actions/types';
+import { GET_ERRORS } from '../actions/types';
 
 const initialSatte = {};
 export default function (state = initialSatte, action) {

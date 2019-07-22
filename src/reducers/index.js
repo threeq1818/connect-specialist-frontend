@@ -1,9 +1,9 @@
 // recuders/index.js
-import { combineRecuders } from 'redux';
+import { combineReducers } from 'redux';
 import authReducer from './authReducer';
 import errorReducer from './errorReducer';
 
-export default combineRecuders({
+export default combineReducers({
     authReducer,
     errorReducer
 });
