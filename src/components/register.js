@@ -15,10 +15,15 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import TextField from '@material-ui/core/TextField';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
 import { compose } from 'recompose';
 import { withStyles } from '@material-ui/styles';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
 import classnames from 'classnames';
 import { registerUser } from '../actions/authentication';
+import { isEmpty } from '../validation/is-empty';
 
 const styles = theme => ({
   '@global': {
@@ -52,12 +57,17 @@ class Register extends Component {
     this.state = {
       email: '',
       password: '',
-      password_confirm: '',
-      accout_type: '',
+      confirm_password: '',
+      account_type: 'specialist',
       errors: {}
     }
+    this.handleRadioChange = this.handleRadioChange.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleRadioChange(e) {
+    this.setState({ account_type: e.target.value });
   }
 
   handleInputChange(e) {
@@ -70,10 +80,10 @@ class Register extends Component {
   handleSubmit(e) {
     e.preventDefault();
     const user = {
-      name: this.state.name,
+      account_type: this.state.account_type,
       email: this.state.email,
       password: this.state.password,
-      password_confirm: this.state.password_confirm
+      confirm_password: this.state.confirm_password
     }
     this.props.registerUser(user, this.props.history);
   }
@@ -91,7 +101,6 @@ class Register extends Component {
 
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
-      console.log(this.props.auth.user);
       this.props.history.push('/');
     }
   }
@@ -99,6 +108,8 @@ class Register extends Component {
   render() {
     const { classes } = this.props;
     const { errors } = this.state;
+    console.log('aaaaa');
+    console.log(errors);
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -111,29 +122,20 @@ class Register extends Component {
           </Typography>
           <form className={classes.form} noValidate>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="fname"
-                  name="firstName"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
+              <RadioGroup aria-label="position" name="account_type" value={this.state.account_type} onChange={this.handleRadioChange} row>
+                <FormControlLabel
+                  value="specialist"
+                  control={<Radio color="primary" />}
+                  label="I'll become a specialist"
+                  labelPlacement="top"
                 />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="lname"
+                <FormControlLabel
+                  value="customer"
+                  control={<Radio color="primary" />}
+                  label="I'll become a customer"
+                  labelPlacement="top"
                 />
-              </Grid>
+              </RadioGroup>
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"
@@ -143,7 +145,12 @@ class Register extends Component {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  onChange={this.handleInputChange}
+                  value={this.state.email}
+                  aria-describedby="component-error-text"
+                  error={isEmpty(errors.email) ? '' : 'true'}
                 />
+                <FormHelperText id="email-error-text" error>{errors.email}</FormHelperText>
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -154,8 +161,28 @@ class Register extends Component {
                   label="Password"
                   type="password"
                   id="password"
-                  autoComplete="current-password"
+                  onChange={this.handleInputChange}
+                  value={this.state.password}
+                  aria-describedby="password-error-text"
+                  error={isEmpty(errors.password) ? '' : 'true'}
                 />
+                <FormHelperText id="password-error-text" error>{errors.password}</FormHelperText>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="confirm_password"
+                  label="Confirm Password"
+                  type="password"
+                  id="confirm_password"
+                  onChange={this.handleInputChange}
+                  value={this.state.confirm_password}
+                  aria-describedby="confirm_password-error-text"
+                  error={isEmpty(errors.confirm_password) ? '' : 'true'}
+                />
+                <FormHelperText id="confirm_password-error-text" error>{errors.confirm_password}</FormHelperText>
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
@@ -170,6 +197,7 @@ class Register extends Component {
               variant="contained"
               color="primary"
               className={classes.submit}
+              onClick={this.handleSubmit}
             >
               Sign Up
             </Button>
@@ -182,72 +210,7 @@ class Register extends Component {
             </Grid>
           </form>
         </div>
-        {/* <Box mt={5}>
-          <MadeWithLove />
-        </Box> */}
       </Container>
-      // <div className="container" style={{ marginTop: '50px', width: '700px' }}>
-      //   <h2 style={{ marginBottom: '40px' }}>Registration</h2>
-      //   <form onSubmit={this.handleSubmit}>
-      //     <div className="form-group">
-      //       <input
-      //         type="text"
-      //         placeholder="Name"
-      //         className={classnames('form-control form-control-lg', {
-      //           'is-invalid': errors.name
-      //         })}
-      //         name="name"
-      //         onChange={this.handleInputChange}
-      //         value={this.state.name}
-      //       />
-      //       {errors.name && (<div className="invalid-feedback">{errors.name}</div>)}
-      //     </div>
-      //     <div className="form-group">
-      //       <input
-      //         type="email"
-      //         placeholder="Email"
-      //         className={classnames('form-control form-control-lg', {
-      //           'is-invalid': errors.email
-      //         })}
-      //         name="email"
-      //         onChange={this.handleInputChange}
-      //         value={this.state.email}
-      //       />
-      //       {errors.email && (<div className="invalid-feedback">{errors.email}</div>)}
-      //     </div>
-      //     <div className="form-group">
-      //       <input
-      //         type="password"
-      //         placeholder="Password"
-      //         className={classnames('form-control form-control-lg', {
-      //           'is-invalid': errors.password
-      //         })}
-      //         name="password"
-      //         onChange={this.handleInputChange}
-      //         value={this.state.password}
-      //       />
-      //       {errors.password && (<div className="invalid-feedback">{errors.password}</div>)}
-      //     </div>
-      //     <div className="form-group">
-      //       <input
-      //         type="password"
-      //         placeholder="Confirm Password"
-      //         className={classnames('form-control form-control-lg', {
-      //           'is-invalid': errors.password_confirm
-      //         })}
-      //         name="password_confirm"
-      //         onChange={this.handleInputChange}
-      //         value={this.state.password_confirm}
-      //       />
-      //       {errors.password_confirm && (<div className="invalid-feedback">{errors.password_confirm}</div>)}
-      //     </div>
-      //     <div className="form-group">
-      //       <button type="submit" className="btn btn-primary">
-      //         Register User
-      //               </button>
-      //     </div>
-      //   </form>
-      // </div>
     )
   }
 }

@@ -18,7 +18,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-
+import FormHelperText from '@material-ui/core/FormHelperText';
+import classnames from 'classnames';
+import { isEmpty } from '../validation/is-empty';
 import { loginUser } from '../actions/authentication';
 
 const styles = theme => ({
@@ -66,7 +68,7 @@ class Login extends Component {
 	handleInputChange(e) {
 		this.setState({
 			[e.target.name]: e.target.value
-		})
+		});
 	}
 
 	handleSubmit(e) {
@@ -85,6 +87,7 @@ class Login extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		debugger
 		if (nextProps.auth.isAuthenticated) {
 			this.props.history.push('/')
 		}
@@ -96,7 +99,7 @@ class Login extends Component {
 	}
 
 	render() {
-		const { classes } = this.props;
+		const { classes, auth } = this.props;
 		const { errors } = this.state;
 
 		return (
@@ -110,8 +113,8 @@ class Login extends Component {
 						</Avatar>
 						<Typography component="h1" variant="h5">
 							Sign in
-                        </Typography>
-						<form className={classes.form} noValidate>
+            </Typography>
+						<form className={classes.form} onSubmit={this.handleSubmit} noValidate>
 							<TextField
 								variant="outlined"
 								margin="normal"
@@ -120,9 +123,13 @@ class Login extends Component {
 								id="email"
 								label="Email Address"
 								name="email"
-								autoComplete="email"
+								// autoComplete="email"
 								autoFocus
+								aria-describedby="component-error-text"
+								onChange={this.handleInputChange}
+								value={this.state.email}
 							/>
+							<FormHelperText id="email-error-text" error>{errors.email}</FormHelperText>
 							<TextField
 								variant="outlined"
 								margin="normal"
@@ -132,8 +139,12 @@ class Login extends Component {
 								label="Password"
 								type="password"
 								id="password"
-								autoComplete="current-password"
+								// autoComplete="current-password"
+								aria-describedby="component-error-text"
+								onChange={this.handleInputChange}
+								value={this.state.password}
 							/>
+							<FormHelperText id="password-error-text" error>{errors.password}</FormHelperText>
 							<FormControlLabel
 								control={<Checkbox value="remember" color="primary" />}
 								label="Remember me"
@@ -146,62 +157,18 @@ class Login extends Component {
 								className={classes.submit}
 							>
 								Sign In
-                            </Button>
+              </Button>
 							<Grid container>
-								{/* <Grid item xs>
-									<Link href="#" variant="body2">
-										Forgot password?
-                                </Link>
-								</Grid> */}
 								<Grid item>
 									<Link href="/register" variant="body2">
 										{"Don't have an account? Sign Up"}
 									</Link>
 								</Grid>
 							</Grid>
-							{/* <Box mt={5}>
-                                <MadeWithLove />
-                            </Box> */}
 						</form>
 					</div>
 				</Grid>
 			</Grid>
-			// <div className="container" style={{ marginTop: '50px', width: '700px' }}>
-			//     <h2 style={{ marginBottom: '40px' }}>Login</h2>
-			//     <form onSubmit={this.handleSubmit}>
-			//         <div className="form-group">
-			//             <input
-			//                 type="email"
-			//                 placeholder="Email"
-			//                 className={classnames('form-control form-control-lg', {
-			//                     'is-invalid': errors.email
-			//                 })}
-			//                 name="email"
-			//                 onChange={this.handleInputChange}
-			//                 value={this.state.email}
-			//             />
-			//             {errors.email && (<div className="invalid-feedback">{errors.email}</div>)}
-			//         </div>
-			//         <div className="form-group">
-			//             <input
-			//                 type="password"
-			//                 placeholder="Password"
-			//                 className={classnames('form-control form-control-lg', {
-			//                     'is-invalid': errors.password
-			//                 })}
-			//                 name="password"
-			//                 onChange={this.handleInputChange}
-			//                 value={this.state.password}
-			//             />
-			//             {errors.password && (<div className="invalid-feedback">{errors.password}</div>)}
-			//         </div>
-			//         <div className="form-group">
-			//             <button type="submit" className="btn btn-primary">
-			//                 Login User
-			//         </button>
-			//         </div>
-			//     </form>
-			// </div>
 		)
 	}
 }
