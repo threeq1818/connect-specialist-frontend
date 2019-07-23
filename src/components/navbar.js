@@ -13,74 +13,71 @@ import { withRouter } from 'react-router-dom';
 import { logoutUser } from '../actions/authentication';
 
 const styles = theme => ({
-    root: {
-        flexGrow: 1,
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
-    },
-    title: {
-        flexGrow: 1,
-    },
+  root: {
+    flexGrow: 1,
+  },
+  title: {
+    flexGrow: 1,
+  },
 });
 
 class NavBar extends Component {
-    constructor(props) {
-        super(props);
-    }
+  constructor(props) {
+    super(props);
+  }
 
-    onLogout(e) {
-        e.preventDefalut();
-        this.props.logoutUser(this.props.history);
-    }
+  onLogout(e) {
+    e.preventDefalut();
+    this.props.logoutUser(this.props.history);
+  }
 
-    render() {
-        const { classes, auth } = this.props;
-        const { isAuthenticated, user } = auth;
+  render() {
+    const { classes, auth } = this.props;
+    const { isAuthenticated, user } = auth;
 
-        const authLink = (
-            <>
-                <Button color="inherit">My Profile</Button>
-                <Button color="inherit">Sign Out</Button>
-            </>
-        );
-        const guessLink = (
-            <>
-                <Button color="inherit" href="register">Sign Up</Button>
-                <Button color="inherit" href="login">Sign In</Button>
-            </>
-        );
+    const authLink = (
+      <>
+        <Button color="inherit">My Profile</Button>
+        <Button color="inherit">Sign Out</Button>
+      </>
+    );
+    const guessLink = (
+      <>
+        <Button color="inherit" href="register">Sign Up</Button>
+        <Button color="inherit" href="login">Sign In</Button>
+      </>
+    );
 
-        return (
-            <div className={classes.root}>
-                <AppBar position='static'>
-                    <ToolBar>
-                        <Typography variant="h6" className={classes.title}>
-                            Specialists And Customers Always Wish To Meet
+    return (
+      <div className={classes.root}>
+        <AppBar position='static'>
+          <ToolBar>
+            <Typography variant="h6" className={classes.title}>
+              Specialists And Customers Always Wish To Meet
                         </Typography>
-                        {isAuthenticated ? authLink : guessLink}
-                    </ToolBar>
-                </AppBar>
-            </div >
-        );
-    }
+            {isAuthenticated ? authLink : guessLink}
+          </ToolBar>
+        </AppBar>
+      </div >
+    );
+  }
 }
 
 NavBar.propTypes = {
-    logoutUser: PropTypes.func.isRequired,
-    auth: PropTypes.object.isRequired
+  logoutUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => {
-    return {
-        auth: state.auth
-    }
+  return {
+    auth: state.auth
+  }
 }
 
 const enhance = compose(
-    withStyles(styles),
-    withRouter,
-    connect(mapStateToProps, { logoutUser })
+  withStyles(styles),
+  withRouter,
+  connect(mapStateToProps, { logoutUser })
 )
 
 export default enhance(NavBar);

@@ -5,8 +5,8 @@ import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
 import NavBar from './components/navbar';
 import Home from './components/home.js';
-import Register from './components/Register';
-import Login from './components/Login';
+import Register from './components/register';
+import Login from './components/login';
 import store from './store';
 
 // import 'bootstrap/dist/css/bootstrap.min.css';
