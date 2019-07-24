@@ -82,15 +82,17 @@ class Customer extends Component {
   }
 }
 
-// Customer.propTypes = {
-//   errors: PropTypes.any.isRequired
-// }
+Customer.propTypes = {
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.any.isRequired
+}
 
-// const mapStateToProps = (state) => {
-//   return {
-//     errors: state.errors
-//   }
-// }
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth,
+    errors: state.errors
+  }
+}
 
 const enhance = compose(
   withStyles(useStyles),

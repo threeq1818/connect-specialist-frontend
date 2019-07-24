@@ -178,7 +178,7 @@ Login.propTypes = {
 	loginUser: PropTypes.func.isRequired,
 	auth: PropTypes.object.isRequired,
 	errors: PropTypes.any.isRequired,
-	classes: PropTypes.object.isRequired
+	// classes: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => {

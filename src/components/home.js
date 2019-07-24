@@ -20,7 +20,7 @@ import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/styles';
-import { fetchServices } from '../actions/services';
+import { fetchAllServices_home as fetchServices } from '../actions/services';
 
 function createData(id, service_type, description, hourly_rate, preferred_hour) {
   return { id, service_type, description, hourly_rate, preferred_hour };

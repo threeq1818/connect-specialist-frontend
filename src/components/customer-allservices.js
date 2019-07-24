@@ -20,10 +20,10 @@ import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/styles';
-import { fetchServices } from '../actions/services';
+import { fetchAllServices_customer as fetchServices } from '../actions/services';
 
-function createData(id, service_type, description, hourly_rate, preferred_hour) {
-  return { id, service_type, description, hourly_rate, preferred_hour };
+function createData(id, service_type, description, hourly_rate, preferred_hour, specialist, rating) {
+  return { id, service_type, description, hourly_rate, preferred_hour, specialist, rating };
 }
 
 function desc(a, b, orderBy) {
@@ -55,6 +55,8 @@ const headRows = [
   { id: 'description', numeric: false, disablePadding: false, label: 'Description' },
   { id: 'hourly_rate', numeric: true, disablePadding: false, label: 'Hourly Rate' },
   { id: 'preferred_hour', numeric: false, disablePadding: false, label: 'Preferred Hour' },
+  { id: 'specialist', numeric: false, disablePadding: false, label: 'Spacialist' },
+  { id: 'rating', numeric: true, disablePadding: false, label: 'Rating' },
 ];
 
 function EnhancedTableHead(props) {
@@ -238,20 +240,17 @@ class Home extends Component {
   handleChangeRowsPerPage(event) {
     this.setState({ rowsPerPage: event.target.value });
     this.setState({ page: 0 });
-    // setRowsPerPage(+event.target.value);
-    // setPage(0);
   }
 
   handleChangeDense(event) {
     this.setState({ dense: event.target.checked });
-    // setDense(event.target.checked);
   }
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
     this.rows = this.props.services.data.map(item =>
-      createData(item._id, item.service_type, item.description, item.hourly_rate, item.preferred_hour)
+      createData(item._id, item.service_type, item.description, item.hourly_rate, item.preferred_hour, item.specialist, item.rating)
     );
 
     const { classes } = this.props;
@@ -304,6 +303,8 @@ class Home extends Component {
                         <TableCell align={headRows[1].numeric ? 'right' : 'left'}>{row.description}</TableCell>
                         <TableCell align={headRows[2].numeric ? 'right' : 'left'}>{row.hourly_rate}</TableCell>
                         <TableCell align={headRows[3].numeric ? 'right' : 'left'}>{row.preferred_hour}</TableCell>
+                        <TableCell align={headRows[4].numeric ? 'right' : 'left'}>{row.specialist}</TableCell>
+                        <TableCell align={headRows[5].numeric ? 'right' : 'left'}>{row.rating}</TableCell>
                       </TableRow>
                     );
                   })}
