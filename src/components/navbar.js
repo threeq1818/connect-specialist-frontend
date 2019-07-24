@@ -24,10 +24,11 @@ const styles = theme => ({
 class NavBar extends Component {
   constructor(props) {
     super(props);
+    this.onLogout = this.onLogout.bind(this);
   }
 
   onLogout(e) {
-    e.preventDefalut();
+    e.preventDefault();
     this.props.logoutUser(this.props.history);
   }
 
@@ -38,7 +39,7 @@ class NavBar extends Component {
     const authLink = (
       <>
         <Button color="inherit">My Profile</Button>
-        <Button color="inherit">Sign Out</Button>
+        <Button color="inherit" onClick={this.onLogout}>Sign Out</Button>
       </>
     );
     const guessLink = (

@@ -82,18 +82,19 @@ class Login extends Component {
 
 	componentDidMount() {
 		if (this.props.auth.isAuthenticated) {
-			this.props.history.push('/');
+			if (this.props.auth.user.account_type === 'customer')
+				this.props.history.push('/customer');
 		}
 	}
 
-	componentWillReceiveProps(nextProps) {
-		debugger
-		if (nextProps.auth.isAuthenticated) {
-			this.props.history.push('/')
+	componentDidUpdate(prevProps, prevState) {
+		if (this.props.auth.isAuthenticated) {
+			if (this.props.auth.user.account_type === 'customer')
+				this.props.history.push('/customer');
 		}
-		if (nextProps.errors) {
+		if (this.props.errors !== prevProps.errors) {
 			this.setState({
-				errors: nextProps.errors
+				errors: this.props.errors
 			});
 		}
 	}
@@ -176,7 +177,8 @@ class Login extends Component {
 Login.propTypes = {
 	loginUser: PropTypes.func.isRequired,
 	auth: PropTypes.object.isRequired,
-	errors: PropTypes.object.isRequired
+	errors: PropTypes.any.isRequired,
+	classes: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => {

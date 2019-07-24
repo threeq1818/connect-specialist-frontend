@@ -1,9 +1,12 @@
 // component/home.js
 
-import React from 'react';
+import React, { Component } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { lighten, makeStyles } from '@material-ui/core/styles';
+import { lighten, withStyles } from '@material-ui/core/styles';
+import { compose } from 'recompose';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -21,25 +24,25 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import { makeStyles } from '@material-ui/styles';
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+function createData(id, service_type, description, hourly_rate, preferred_hour) {
+  return { id, service_type, description, hourly_rate, preferred_hour };
 }
 
 const rows = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
+  createData(1, 'Car Repaire', 'Hong Kong', 130.7, 8),
+  createData(2, 'Car Repaire', 'Beijing', 55.0, 10),
+  createData(3, 'Car Repaire', 'Mercedes Benze', 160.0, 24),
+  createData(4, 'Carpentry', 'Manutacture family furnitures', 36.0, 14),
+  createData(6, 'Carpentry', 'Official furnitures', 36.0, 10),
+  createData(7, 'Move', 'Safety is first', 32, '8:00-20:00'),
+  createData(8, 'Cleaning', 'Fast and Clearly', 9.0, '10:00-18:00'),
+  createData(9, 'Demolition', 'We just ate all that.', 50, 14),
+  createData(10, 'Home improvement', 'Fanstastic Design', 26.0, 24),
+  createData(11, 'Landscaping', 'Natural and beautiful', 20, '10:00-18:00'),
+  createData(12, 'Program Development', 'Web development', 30, 24),
+  createData(13, 'Program Development', 'e-Commerce site', 40, 24),
 ];
 
 function desc(a, b, orderBy) {
@@ -67,11 +70,10 @@ function getSorting(order, orderBy) {
 }
 
 const headRows = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
+  { id: 'service_type', numeric: false, disablePadding: true, label: 'Service Type' },
+  { id: 'description', numeric: false, disablePadding: false, label: 'Description' },
+  { id: 'hourly_rate', numeric: true, disablePadding: false, label: 'Hourly Rate' },
+  { id: 'preferred_hour', numeric: false, disablePadding: false, label: 'Preferred Hour' },
 ];
 
 function EnhancedTableHead(props) {
@@ -84,12 +86,7 @@ function EnhancedTableHead(props) {
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'Select all desserts' }}
-          />
+          No
         </TableCell>
         {headRows.map(row => (
           <TableCell
@@ -129,13 +126,13 @@ const useToolbarStyles = makeStyles(theme => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   spacer: {
     flex: '1 1 100%',
   },
@@ -158,31 +155,9 @@ const EnhancedTableToolbar = props => {
       })}
     >
       <div className={classes.title}>
-        {numSelected > 0 ? (
-          <Typography color="inherit" variant="subtitle1">
-            {numSelected} selected
-          </Typography>
-        ) : (
-          <Typography variant="h6" id="tableTitle">
-            Nutrition
-          </Typography>
-        )}
-      </div>
-      <div className={classes.spacer} />
-      <div className={classes.actions}>
-        {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton aria-label="Delete">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
-        )}
+        <Typography variant="h6" id="tableTitle">
+          Table of services
+        </Typography>
       </div>
     </Toolbar>
   );
@@ -192,7 +167,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = (theme) => ({
   root: {
     width: '100%',
     marginTop: theme.spacing(3),
@@ -207,148 +182,186 @@ const useStyles = makeStyles(theme => ({
   tableWrapper: {
     overflowX: 'auto',
   },
-}));
+});
 
-export default function EnhancedTable() {
-  const classes = useStyles();
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  function handleRequestSort(event, property) {
-    const isDesc = orderBy === property && order === 'desc';
-    setOrder(isDesc ? 'asc' : 'desc');
-    setOrderBy(property);
+class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      services: [],
+      order: 'asc',
+      orderBy: '',
+      selected: [],
+      page: 0,
+      dense: false,
+      rowsPerPage: 5,
+    };
+    this.handleRequestSort = this.handleRequestSort.bind(this);
+    this.handleSelectAllClick = this.handleSelectAllClick.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleChangePage = this.handleChangePage.bind(this);
+    this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+    this.handleChangeDense = this.handleChangeDense.bind(this);
+    this.isSelected = this.isSelected.bind(this);
+  }
+  handleRequestSort(event, property) {
+    const isDesc = this.state.orderBy === property && this.state.order === 'desc';
+    this.setState({ order: (isDesc ? 'asc' : 'desc') });
+    this.setState({ orderBy: property });
   }
 
-  function handleSelectAllClick(event) {
+  handleSelectAllClick(event) {
     if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.name);
-      setSelected(newSelecteds);
+      const newSelecteds = rows.map(n => n.id);
+      this.setState({ selected: newSelecteds });
       return;
     }
-    setSelected([]);
+    this.setState({ selected: [] });
   }
 
-  function handleClick(event, name) {
-    const selectedIndex = selected.indexOf(name);
+  handleClick(event, id) {
+    const selectedIndex = this.state.selected.indexOf(id);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(this.state.selected, id);
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
+      newSelected = newSelected.concat(this.state.selected.slice(1));
+    } else if (selectedIndex === this.state.selected.length - 1) {
+      newSelected = newSelected.concat(this.state.selected.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        this.state.selected.slice(0, selectedIndex),
+        this.state.selected.slice(selectedIndex + 1),
       );
     }
 
-    setSelected(newSelected);
+    this.setState({ selected: newSelected });
   }
 
-  function handleChangePage(event, newPage) {
-    setPage(newPage);
+  handleChangePage(event, newPage) {
+    this.setState({ page: newPage });
   }
 
-  function handleChangeRowsPerPage(event) {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  handleChangeRowsPerPage(event) {
+    this.setState({ rowsPerPage: event.target.value });
+    this.setState({ page: 0 });
+    // setRowsPerPage(+event.target.value);
+    // setPage(0);
   }
 
-  function handleChangeDense(event) {
-    setDense(event.target.checked);
+  handleChangeDense(event) {
+    this.setState({ dense: event.target.checked });
+    // setDense(event.target.checked);
   }
 
-  const isSelected = name => selected.indexOf(name) !== -1;
+  isSelected = id => this.state.selected.indexOf(id) !== -1;
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  render() {
+    const { classes } = this.props;
+    const emptyRows = this.state.rowsPerPage - Math.min(this.state.rowsPerPage, rows.length - this.state.page * this.state.rowsPerPage);
+    return (
+      <div className={classes.root} >
+        <Paper className={classes.paper}>
+          <EnhancedTableToolbar numSelected={this.state.selected.length} />
+          <div className={classes.tableWrapper}>
+            <Table
+              className={classes.table}
+              aria-labelledby="tableTitle"
+              size={this.state.dense ? 'small' : 'medium'}
+            >
+              <EnhancedTableHead
+                numSelected={this.state.selected.length}
+                order={this.state.order}
+                orderBy={this.state.orderBy}
+                onSelectAllClick={this.handleSelectAllClick}
+                onRequestSort={this.handleRequestSort}
+                rowCount={rows.length}
+              />
+              <TableBody>
+                {stableSort(rows, getSorting(this.state.order, this.state.orderBy))
+                  .slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
+                  .map((row, index) => {
+                    const isItemSelected = this.isSelected(row.id);
+                    const labelId = `enhanced-table-checkbox-${index}`;
 
-  return (
-    <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <div className={classes.tableWrapper}>
-          <Table
-            className={classes.table}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {stableSort(rows, getSorting(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
-                  const labelId = `enhanced-table-checkbox-${index}`;
-
-                  return (
-                    <TableRow
-                      hover
-                      onClick={event => handleClick(event, row.name)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.name}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
+                    return (
+                      <TableRow
+                        hover
+                        // onClick={event => handleClick(event, row.id)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
+                      >
+                        <TableCell padding="checkbox">
+                          {/* <Checkbox
                           checked={isItemSelected}
                           inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none">
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          backIconButtonProps={{
-            'aria-label': 'Previous Page',
-          }}
-          nextIconButtonProps={{
-            'aria-label': 'Next Page',
-          }}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+                        /> */}
+                          {(index + 1)}
+                        </TableCell>
+                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                          {row.service_type}
+                        </TableCell>
+                        <TableCell align={headRows[1].numeric ? 'right' : 'left'}>{row.description}</TableCell>
+                        <TableCell align={headRows[2].numeric ? 'right' : 'left'}>{row.hourly_rate}</TableCell>
+                        <TableCell align={headRows[3].numeric ? 'right' : 'left'}>{row.preferred_hour}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 49 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={this.state.rowsPerPage}
+            page={this.state.page}
+            backIconButtonProps={{
+              'aria-label': 'Previous Page',
+            }}
+            nextIconButtonProps={{
+              'aria-label': 'Next Page',
+            }}
+            onChangePage={this.handleChangePage}
+            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+          />
+        </Paper>
+        <FormControlLabel
+          control={<Switch checked={this.state.dense} onChange={this.handleChangeDense} />}
+          label="Dense padding"
         />
-      </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
-    </div>
-  );
+      </div>
+    );
+  }
 }
+
+
+Home.propTypes = {
+  fetchServices: PropTypes.func.isRequired,
+  services: PropTypes.array.isRequired,
+  errors: PropTypes.any.isRequired
+}
+
+const mapStateToProps = (state) => {
+  return {
+    services: state.services,
+    errors: state.errors
+  }
+}
+
+const enhance = compose(
+  withStyles(useStyles),
+  withRouter,
+   connect(mapStateToProps, { fetchServices })
+);
+
+export default enhance(Home)

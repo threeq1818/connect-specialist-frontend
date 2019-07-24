@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
@@ -7,6 +7,7 @@ import jwt_decode from 'jwt-decode';
 import NavBar from './components/navbar';
 import Home from './components/home.js';
 import Register from './components/register';
+import Customer from './components/customer';
 import Login from './components/login';
 import store from './store';
 import setAuthToken from './setAuthToken';
@@ -17,7 +18,6 @@ const theme = createMuiTheme({
 });
 
 if (localStorage.jwtToken) {
-  debugger
   setAuthToken(localStorage.jwtToken);
   const decoded = jwt_decode(localStorage.jwtToken);
   store.dispatch(setCurrentUser(decoded));
@@ -29,6 +29,31 @@ if (localStorage.jwtToken) {
   }
 }
 
+const isAuthenticate = () => {
+  if (localStorage.jwtToken) {
+    setAuthToken(localStorage.jwtToken);
+    const decoded = jwt_decode(localStorage.jwtToken);
+    store.dispatch(setCurrentUser(decoded));
+    console.log(decoded);
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp < currentTime) {
+      store.dispatch(logoutUser());
+      return false;
+    }
+    else return true;
+  }
+  else
+    return false;
+}
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={(props) => (
+    isAuthenticate() ?
+      <Component {...props} />
+      : <Redirect to='/' />
+  )} />
+)
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -36,11 +61,15 @@ function App() {
         <Router>
           <div>
             <NavBar />
-            <Route exact path='/' component={Home} />
             {/* <PrivateRoute exact path="/" component={Home} /> */}
             <div className="container">
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/login" component={Login} />
+              <Switch>
+                <Route exact path='/' component={Home} />
+                <PrivateRoute exact path='/customer' component={Customer} />
+                <Route exact path="/register" component={Register} />
+                <Route exact path="/login" component={Login} />
+                <Redirect to='/' />
+              </Switch>
             </div>
           </div>
         </Router>

@@ -42,7 +42,7 @@ export const logoutUser = (history) => dispatch => {
     setAuthToken(false);
     dispatch(setCurrentUser({}));
     if (history)
-        history.push('/Home');
+        history.push('/');
 }
 
 export const setCurrentUser = (decoded) => {
