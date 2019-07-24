@@ -1,4 +1,4 @@
-// component/home.js
+// component/customer-allservices.js
 
 import React, { Component } from 'react';
 import clsx from 'clsx';
