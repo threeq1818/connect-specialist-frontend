@@ -20,12 +20,12 @@ import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
-import SendIcon from '@material-ui/icons/Send';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from '@material-ui/styles';
-import { fetchAllServices_customer as fetchServices } from '../actions/services';
+import { fetchRequestedProjects_customer as fetchProjects } from '../actions/projects';
 
-function createData(id, service_type, description, hourly_rate, preferred_hour, specialist_email, rating) {
-  return { id, service_type, description, hourly_rate, preferred_hour, specialist_email, rating };
+function createData(id, service_type, description, hourly_rate, preferred_hour, specialist_email, status, date) {
+  return { id, service_type, description, hourly_rate, preferred_hour, specialist_email, status, date };
 }
 
 function desc(a, b, orderBy) {
@@ -58,7 +58,8 @@ const headRows = [
   { id: 'hourly_rate', numeric: true, disablePadding: false, label: 'Hourly Rate' },
   { id: 'preferred_hour', numeric: false, disablePadding: false, label: 'Preferred Hour' },
   { id: 'specialist_email', numeric: false, disablePadding: false, label: 'Specialist' },
-  { id: 'rating', numeric: true, disablePadding: false, label: 'Rating' },
+  { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
+  { id: 'date', numeric: false, disablePadding: false, label: 'Date' },
 ];
 
 function EnhancedTableHead(props) {
@@ -142,7 +143,7 @@ const EnhancedTableToolbar = props => {
     >
       <div className={classes.title}>
         <Typography variant="h6" id="tableTitle">
-          All Services
+          My Requested Projects
         </Typography>
       </div>
     </Toolbar>
@@ -176,11 +177,11 @@ const useStyles = (theme) => ({
   },
 });
 
-class AllServiceTab extends Component {
+class RequestedProjectTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      //  services: [],
+      // services: [],
       order: 'asc',
       orderBy: '',
       selected: [],
@@ -199,7 +200,7 @@ class AllServiceTab extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchServices();
+    this.props.fetchProjects(this.props.auth.user.id);
   }
 
   componentDidUpdate() {
@@ -257,8 +258,8 @@ class AllServiceTab extends Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    this.rows = this.props.services.data.map(item =>
-      createData(item._id, item.service_type, item.description, item.hourly_rate, item.preferred_hour, item.specialist_email, item.rating)
+    this.rows = this.props.projects.data.map(item =>
+      createData(item._id, item.service_type, item.description, item.hourly_rate, item.preferred_hour, item.specialist_email, item.status, item.date)
     );
 
     const { classes } = this.props;
@@ -312,11 +313,12 @@ class AllServiceTab extends Component {
                         <TableCell align={headRows[2].numeric ? 'right' : 'left'}>{row.hourly_rate}</TableCell>
                         <TableCell align={headRows[3].numeric ? 'right' : 'left'}>{row.preferred_hour}</TableCell>
                         <TableCell align={headRows[4].numeric ? 'right' : 'left'}>{row.specialist_email}</TableCell>
-                        <TableCell align={headRows[5].numeric ? 'right' : 'left'}>{row.rating}</TableCell>
+                        <TableCell align={headRows[5].numeric ? 'right' : 'left'}>{row.status}</TableCell>
+                        <TableCell align={headRows[5].numeric ? 'right' : 'left'}>{row.date}</TableCell>
                         <TableCell align='center'>
                           <Button variant="contained" color="primary" className={classes.button}>
-                            Request
-                            <SendIcon className={classes.rightIcon}></SendIcon>
+                            Delete
+                            <DeleteIcon className={classes.rightIcon}></DeleteIcon>
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -356,15 +358,17 @@ class AllServiceTab extends Component {
 }
 
 
-AllServiceTab.propTypes = {
-  fetchServices: PropTypes.func.isRequired,
-  services: PropTypes.object.isRequired,
+RequestedProjectTab.propTypes = {
+  fetchProjects: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  projects: PropTypes.object.isRequired,
   errors: PropTypes.any.isRequired
 }
 
 const mapStateToProps = (state) => {
   return {
-    services: state.services, //format: services.data:[]
+    auth: state.auth,
+    projects: state.projects, //format: projects.data:[]
     errors: state.errors
   }
 }
@@ -372,7 +376,7 @@ const mapStateToProps = (state) => {
 const enhance = compose(
   withStyles(useStyles),
   withRouter,
-  connect(mapStateToProps, { fetchServices })
+  connect(mapStateToProps, { fetchProjects })
 );
 
-export default enhance(AllServiceTab)
+export default enhance(RequestedProjectTab)

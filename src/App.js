@@ -27,6 +27,10 @@ if (localStorage.jwtToken) {
     store.dispatch(logoutUser());
     window.location.href = '/';
   }
+  else if (decoded.account_type === 'customer') {
+    //  debugger
+    // window.location.href = '/customer';
+  }
 }
 
 const isAuthenticate = () => {
@@ -34,24 +38,26 @@ const isAuthenticate = () => {
     setAuthToken(localStorage.jwtToken);
     const decoded = jwt_decode(localStorage.jwtToken);
     store.dispatch(setCurrentUser(decoded));
-    console.log(decoded);
     const currentTime = Date.now() / 1000;
     if (decoded.exp < currentTime) {
       store.dispatch(logoutUser());
       return false;
     }
-    else return true;
+    else
+      return true;
   }
   else
     return false;
 }
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={(props) => (
-    isAuthenticate() ?
-      <Component {...props} />
-      : <Redirect to='/' />
-  )} />
+  <Route {...rest} render={(props) => {
+    //  debugger
+    //  console.log(isAuthenticate());
+    // console.log(isAuthenticate() === true);
+    return isAuthenticate() === true ? <Component {...props} /> : <Redirect to='/' />
+  }}
+  />
 )
 
 function App() {

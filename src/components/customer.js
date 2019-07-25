@@ -10,6 +10,7 @@ import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import AllServiceTab from './customer-allservices';
+import RequestedProjectTab from './customer-myrequests';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -64,18 +65,18 @@ class Customer extends Component {
           textColor="primary"
           centered
         >
-          <Tab label="Item One" />
-          <Tab label="Item Two" />
+          <Tab label="All Services" />
+          <Tab label="My Request" />
           <Tab label="Item Three" />
         </Tabs>
         <TabPanel value={this.state.value} index={0}>
           <AllServiceTab />
         </TabPanel>
         <TabPanel value={this.state.value} index={1}>
-          <AllServiceTab />
+          <RequestedProjectTab />
         </TabPanel>
         <TabPanel value={this.state.value} index={2}>
-          <AllServiceTab />
+          {/* <AllServiceTab /> */}
         </TabPanel>
       </Paper>
     );
@@ -97,7 +98,7 @@ const mapStateToProps = (state) => {
 const enhance = compose(
   withStyles(useStyles),
   withRouter,
-  // connect(mapStateToProps, {})
+  connect(mapStateToProps, {})
 );
 
 export default enhance(Customer)
