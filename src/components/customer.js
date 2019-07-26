@@ -11,6 +11,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import AllServiceTab from './customer-allservices';
 import RequestedProjectTab from './customer-myrequests';
+import FinishedProjectsTab from './customer-finishedprojects';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -67,16 +68,16 @@ class Customer extends Component {
         >
           <Tab label="All Services" />
           <Tab label="My Request" />
-          <Tab label="Item Three" />
+          <Tab label="My Finished Projects" />
         </Tabs>
         <TabPanel value={this.state.value} index={0}>
           <AllServiceTab />
         </TabPanel>
         <TabPanel value={this.state.value} index={1}>
-          <RequestedProjectTab />
+          {this.state.value === 1 ? (<RequestedProjectTab />) : <></>}
         </TabPanel>
         <TabPanel value={this.state.value} index={2}>
-          {/* <AllServiceTab /> */}
+          {this.state.value === 2 ? (<FinishedProjectsTab />) : <></>}
         </TabPanel>
       </Paper>
     );

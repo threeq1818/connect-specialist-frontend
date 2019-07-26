@@ -1,4 +1,4 @@
-// component/customer-allservices.js
+// component/customer-finishedprojects.js
 
 import React, { Component } from 'react';
 import clsx from 'clsx';
@@ -22,10 +22,10 @@ import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from '@material-ui/styles';
-import { fetchRequestedProjects_customer as fetchProjects } from '../actions/projects';
+import { fetchFinishedProjects_customer as fetchProjects } from '../actions/projects';
 
-function createData(id, service_type, description, hourly_rate, preferred_hour, specialist_email, status, date) {
-  return { id, service_type, description, hourly_rate, preferred_hour, specialist_email, status, date };
+function createData(id, service_type, description, hourly_rate, preferred_hour, specialist_email, rating) {
+  return { id, service_type, description, hourly_rate, preferred_hour, specialist_email, rating };
 }
 
 function desc(a, b, orderBy) {
@@ -58,8 +58,7 @@ const headRows = [
   { id: 'hourly_rate', numeric: true, disablePadding: false, label: 'Hourly Rate' },
   { id: 'preferred_hour', numeric: false, disablePadding: false, label: 'Preferred Hour' },
   { id: 'specialist_email', numeric: false, disablePadding: false, label: 'Specialist' },
-  { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
-  { id: 'date', numeric: false, disablePadding: false, label: 'Date' },
+  { id: 'rating', numeric: true, disablePadding: false, label: 'Rating' },
 ];
 
 function EnhancedTableHead(props) {
@@ -90,7 +89,6 @@ function EnhancedTableHead(props) {
             </TableSortLabel>
           </TableCell>
         ))}
-        <TableCell align='center'>Action</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -143,7 +141,7 @@ const EnhancedTableToolbar = props => {
     >
       <div className={classes.title}>
         <Typography variant="h6" id="tableTitle">
-          My Requested Projects
+          My Finished Projects
         </Typography>
       </div>
     </Toolbar>
@@ -177,9 +175,11 @@ const useStyles = (theme) => ({
   },
 });
 
-class RequestedProjectTab extends Component {
+class FinishedProjectTab extends Component {
   constructor(props) {
     super(props);
+    // debugger
+    console.log('constructor');
     this.state = {
       // services: [],
       order: 'asc',
@@ -200,6 +200,7 @@ class RequestedProjectTab extends Component {
   }
 
   componentDidMount() {
+    console.log('loaded');
     this.props.fetchProjects(this.props.auth.user.id);
   }
 
@@ -259,7 +260,7 @@ class RequestedProjectTab extends Component {
 
   render() {
     this.rows = this.props.projects.data.map(item =>
-      createData(item._id, item.service_type, item.description, item.hourly_rate, item.preferred_hour, item.specialist_email, item.status, item.date)
+      createData(item._id, item.service_type, item.description, item.hourly_rate, item.preferred_hour, item.specialist_email, item.rating)
     );
 
     const { classes } = this.props;
@@ -313,20 +314,13 @@ class RequestedProjectTab extends Component {
                         <TableCell align={headRows[2].numeric ? 'right' : 'left'}>{row.hourly_rate}</TableCell>
                         <TableCell align={headRows[3].numeric ? 'right' : 'left'}>{row.preferred_hour}</TableCell>
                         <TableCell align={headRows[4].numeric ? 'right' : 'left'}>{row.specialist_email}</TableCell>
-                        <TableCell align={headRows[5].numeric ? 'right' : 'left'}>{row.status}</TableCell>
-                        <TableCell align={headRows[6].numeric ? 'right' : 'left'}>{row.date}</TableCell>
-                        <TableCell align='center'>
-                          <Button variant="contained" color="primary" className={classes.button}>
-                            Delete
-                            <DeleteIcon className={classes.rightIcon}></DeleteIcon>
-                          </Button>
-                        </TableCell>
+                        <TableCell align={headRows[5].numeric ? 'right' : 'left'}>{row.rating}</TableCell>
                       </TableRow>
                     );
                   })}
                 {emptyRows > 0 && (
                   <TableRow style={{ height: 49 * emptyRows / 2 }}>
-                    <TableCell colSpan={8} />
+                    <TableCell colSpan={7} />
                   </TableRow>
                 )}
               </TableBody>
@@ -358,7 +352,7 @@ class RequestedProjectTab extends Component {
 }
 
 
-RequestedProjectTab.propTypes = {
+FinishedProjectTab.propTypes = {
   fetchProjects: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   projects: PropTypes.object.isRequired,
@@ -379,4 +373,4 @@ const enhance = compose(
   connect(mapStateToProps, { fetchProjects })
 );
 
-export default enhance(RequestedProjectTab)
+export default enhance(FinishedProjectTab)
