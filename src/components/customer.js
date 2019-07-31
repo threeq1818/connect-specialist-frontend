@@ -71,7 +71,7 @@ class Customer extends Component {
           <Tab label="My Finished Projects" />
         </Tabs>
         <TabPanel value={this.state.value} index={0}>
-          <AllServiceTab />
+          {this.state.value === 1 ? (<AllServiceTab />) : <></>}
         </TabPanel>
         <TabPanel value={this.state.value} index={1}>
           {this.state.value === 1 ? (<RequestedProjectTab />) : <></>}

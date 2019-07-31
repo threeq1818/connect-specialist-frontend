@@ -84,6 +84,8 @@ class Login extends Component {
 		if (this.props.auth.isAuthenticated) {
 			if (this.props.auth.user.account_type === 'customer')
 				this.props.history.push('/customer');
+			if (this.props.auth.user.account_type === 'specialist')
+				this.props.history.push('/specialist');
 		}
 	}
 
@@ -91,6 +93,8 @@ class Login extends Component {
 		if (this.props.auth.isAuthenticated) {
 			if (this.props.auth.user.account_type === 'customer')
 				this.props.history.push('/customer');
+			if (this.props.auth.user.account_type === 'specialist')
+				this.props.history.push('/specialist');
 		}
 		if (this.props.errors !== prevProps.errors) {
 			this.setState({

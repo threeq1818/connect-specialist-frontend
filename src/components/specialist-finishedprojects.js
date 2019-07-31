@@ -1,4 +1,4 @@
-// component/specialist-requests.js
+// component/specialist-finishedprojects.js
 
 import React, { Component } from 'react';
 import clsx from 'clsx';
@@ -20,17 +20,11 @@ import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import AcceptIcon from '@material-ui/icons/AddShoppingCart';
-import RejectIcon from '@material-ui/icons/RemoveShoppingCart';
 import { makeStyles } from '@material-ui/styles';
-import { confirmAlert } from 'react-confirm-alert';
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { fetchRequestedProjects_specialist as fetchProjects, acceptProject_specialist, rejectProject_specialist } from '../actions/projects';
+import { fetchFinishedProjects_specialist as fetchProjects } from '../actions/projects';
 
-function createData(id, service_type, description, hourly_rate, preferred_hour, customer_email, status, date) {
-  return { id, service_type, description, hourly_rate, preferred_hour, customer_email, status, date };
+function createData(id, service_type, description, hourly_rate, preferred_hour, customer_email, date, rating) {
+  return { id, service_type, description, hourly_rate, preferred_hour, customer_email, date, rating };
 }
 
 function desc(a, b, orderBy) {
@@ -63,8 +57,8 @@ const headRows = [
   { id: 'hourly_rate', numeric: true, disablePadding: false, label: 'Hourly Rate' },
   { id: 'preferred_hour', numeric: false, disablePadding: false, label: 'Preferred Hour' },
   { id: 'customer_email', numeric: false, disablePadding: false, label: 'Customer' },
-  { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
   { id: 'date', numeric: false, disablePadding: false, label: 'Date' },
+  { id: 'rating', numeric: true, disablePadding: false, label: 'Rating' },
 ];
 
 function EnhancedTableHead(props) {
@@ -95,7 +89,6 @@ function EnhancedTableHead(props) {
             </TableSortLabel>
           </TableCell>
         ))}
-        <TableCell align='center'>Action</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -148,7 +141,7 @@ const EnhancedTableToolbar = props => {
     >
       <div className={classes.title}>
         <Typography variant="h6" id="tableTitle">
-          My Requested Projects
+          My Finished Projects
         </Typography>
       </div>
     </Toolbar>
@@ -180,9 +173,6 @@ const useStyles = (theme) => ({
   rightIcon: {
     marginLeft: theme.spacing(1),
   },
-  margin: {
-    margin: theme.spacing(1),
-  },
 });
 
 class RequestedProjectTab extends Component {
@@ -205,26 +195,14 @@ class RequestedProjectTab extends Component {
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.handleChangeDense = this.handleChangeDense.bind(this);
     this.isSelected = this.isSelected.bind(this);
-    this.onAccept = this.onAccept.bind(this);
-    this.onReject = this.onReject.bind(this);
   }
 
   componentDidMount() {
     this.props.fetchProjects(this.props.auth.user.id);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    console.log('updated');
-    if (this.props.projects !== prevProps.projects) {
-      this.setState({
-        projects: this.props.projects
-      });
-    }
-    if (this.props.errors !== prevProps.errors) {
-      this.setState({
-        errors: this.props.errors
-      });
-    }
+  componentDidUpdate() {
+
   }
 
   handleRequestSort(event, property) {
@@ -277,45 +255,9 @@ class RequestedProjectTab extends Component {
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
-  onAccept(event) {
-    let id = event.currentTarget.value;
-    confirmAlert({
-      title: 'Are you sure?',
-      message: 'Are you sure to accept this project?',
-      buttons: [
-        {
-          label: 'Yes',
-          onClick: () => (this.props.acceptProject_specialist(id))
-        },
-        {
-          label: 'No',
-          onClick: () => { }
-        }
-      ]
-    });
-  }
-
-  onReject(event) {
-    let id = event.currentTarget.value;
-    confirmAlert({
-      title: 'Are you sure?',
-      message: 'Are you sure to reject this project?',
-      buttons: [
-        {
-          label: 'Yes',
-          onClick: () => (this.props.rejectProject_specialist(id))
-        },
-        {
-          label: 'No',
-          onClick: () => { }
-        }
-      ]
-    });
-  }
-
   render() {
     this.rows = this.props.projects.data.map(item =>
-      createData(item._id, item.service_type, item.description, item.hourly_rate, item.preferred_hour, item.customer_email, item.status, item.date)
+      createData(item._id, item.service_type, item.description, item.hourly_rate, item.preferred_hour, item.customer_email, item.finish_date, item.rating)
     );
 
     const { classes } = this.props;
@@ -369,20 +311,8 @@ class RequestedProjectTab extends Component {
                         <TableCell align={headRows[2].numeric ? 'right' : 'left'}>{row.hourly_rate}</TableCell>
                         <TableCell align={headRows[3].numeric ? 'right' : 'left'}>{row.preferred_hour}</TableCell>
                         <TableCell align={headRows[4].numeric ? 'right' : 'left'}>{row.customer_email}</TableCell>
-                        <TableCell align={headRows[5].numeric ? 'right' : 'left'}>{row.status}</TableCell>
-                        <TableCell align={headRows[6].numeric ? 'right' : 'left'}>{new Date(row.date).toLocaleDateString()}</TableCell>
-                        <TableCell align='center'>
-                          <Tooltip title="Accept" aria-label="accept">
-                            <IconButton color="primary" aria-label="Accept" className={classes.margin} value={row.id} onClick={this.onAccept}>
-                              <AcceptIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Reject" aria-label="reject">
-                            <IconButton color="secondary" aria-label="Reject" className={classes.margin} value={row.id} onClick={this.onReject}>
-                              <RejectIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
+                        <TableCell align={headRows[5].date ? 'right' : 'left'}>{new Date(row.date).toLocaleDateString()}</TableCell>
+                        <TableCell align={headRows[6].numeric ? 'right' : 'left'}>{row.rating}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -422,8 +352,6 @@ class RequestedProjectTab extends Component {
 
 RequestedProjectTab.propTypes = {
   fetchProjects: PropTypes.func.isRequired,
-  acceptProject_specialist: PropTypes.func.isRequired,
-  rejectProject_specialist: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   projects: PropTypes.object.isRequired,
   errors: PropTypes.any.isRequired
@@ -440,7 +368,7 @@ const mapStateToProps = (state) => {
 const enhance = compose(
   withStyles(useStyles),
   withRouter,
-  connect(mapStateToProps, { fetchProjects, acceptProject_specialist, rejectProject_specialist })
+  connect(mapStateToProps, { fetchProjects })
 );
 
 export default enhance(RequestedProjectTab)

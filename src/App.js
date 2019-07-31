@@ -8,6 +8,7 @@ import NavBar from './components/navbar';
 import Home from './components/home.js';
 import Register from './components/register';
 import Customer from './components/customer';
+import Specialist from './components/specialist';
 import Login from './components/login';
 import store from './store';
 import setAuthToken from './setAuthToken';
@@ -72,6 +73,7 @@ function App() {
               <Switch>
                 <Route exact path='/' component={Home} />
                 <PrivateRoute exact path='/customer' component={Customer} />
+                <PrivateRoute exact path='/specialist' component={Specialist} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
                 <Redirect to='/' />

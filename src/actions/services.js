@@ -34,3 +34,19 @@ export const fetchAllServices_customer = () => dispatch => {
       });
     });
 }
+
+export const fetchMyServices_specialist = (id) => dispatch => {
+  axios.get(`api/services/specialist/${id}`)
+    .then(res => {
+      dispatch({
+        type: READ_SERVICES,
+        payload: res.data
+      })
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+}

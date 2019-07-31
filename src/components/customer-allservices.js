@@ -176,7 +176,7 @@ const useStyles = (theme) => ({
   },
 });
 
-class AllServiceTab extends Component {
+class AllServicesTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -356,7 +356,7 @@ class AllServiceTab extends Component {
 }
 
 
-AllServiceTab.propTypes = {
+AllServicesTab.propTypes = {
   fetchServices: PropTypes.func.isRequired,
   services: PropTypes.object.isRequired,
   errors: PropTypes.any.isRequired
@@ -375,4 +375,4 @@ const enhance = compose(
   connect(mapStateToProps, { fetchServices })
 );
 
-export default enhance(AllServiceTab)
+export default enhance(AllServicesTab)
