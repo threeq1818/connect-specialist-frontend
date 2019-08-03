@@ -22,6 +22,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import classnames from 'classnames';
 import { isEmpty } from '../validation/is-empty';
 import { loginUser } from '../actions/authentication';
+import { blockParams } from 'handlebars';
 
 const styles = theme => ({
 	root: {
@@ -44,6 +45,7 @@ const styles = theme => ({
 		backgroundColor: theme.palette.secondary.main,
 	},
 	form: {
+		display: 'block',
 		width: '100%', // Fix IE 11 issue.
 		marginTop: theme.spacing(1),
 	},
